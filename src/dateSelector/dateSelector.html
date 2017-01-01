@@ -1,0 +1,10 @@
+<div layout="row" layout-padding>
+  <div layout="column">
+    <label class="md-subhead">Start Date</label>
+    <md-datepicker ng-model="dateStart" ng-change="openEndDate()" md-hide-icons="triangle" md-open-on-focus ng-required></md-datepicker>
+  </div>
+  <div layout="column">
+    <label class="md-subhead">End Date</label>
+    <md-datepicker ng-model="dateEnd" md-hide-icons="triangle" md-is-open="endDateIsOpen"  md-open-on-focus ng-required></md-datepicker>
+  </div>
+</div>

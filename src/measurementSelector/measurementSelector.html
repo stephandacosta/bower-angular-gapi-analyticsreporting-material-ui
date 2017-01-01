@@ -1,0 +1,36 @@
+<div flex layout-margin>
+  <md-autocomplete
+    md-no-cache
+    md-selected-item-change="selectMeasurement(measurement)"
+    md-selected-item="selectedMeasurement"
+    md-search-text="searchMeasurementText"
+    md-items="measurement in measurementSearch(searchMeasurementText)"
+    md-item-text="measurement.uiName"
+    placeholder="Enter {{type}}">
+    <md-item-template>
+      <span>
+        <span> {{measurement.group}} > </span>
+      </span>
+      <span>
+        <span>
+          <strong>{{measurement.uiName}}</strong>
+        </span>
+      </span>
+    </md-item-template>
+    <md-not-found>
+      "{{searchMeasurement}}" has no match.
+    </md-not-found>
+  </md-autocomplete>
+  <md-chips
+    ng-model="selectedMeasurements"
+    delete-button-label="Remove Measurement"
+    delete-hint="Press delete to remove {{type}}"
+    readonly="true"
+    md-max-chips="7">
+    <md-chip-template>
+      <span>{{$chip.uiName}}</span>
+      <md-icon ng-click="removeMeasurement($index)">close</md-icon>
+    </md-chip-template>
+  </md-chips>
+  <!-- <div ng-message="md-max-chips">You reached the maximum amount of chips</div> -->
+</div>

@@ -1,0 +1,49 @@
+
+<md-content flex layout-fill layout="row" md-whiteframe="8">
+  <div layout="column" flex layout-fill>
+    <md-toolbar md-scroll-shrink>
+      <div class="md-toolbar-tools">Accounts</div>
+    </md-toolbar>
+    <div layout="column" flex layout-fill style="overflow:scroll;">
+      <md-list>
+        <md-list-item class="md-2-line" ng-repeat="account in accounts track by account.id" ng-click="selectAccount(account.id)">
+          <div class="md-list-item-text" layout="column">
+            <p>{{account.name}}</p>
+            <p>({{account.id}})</p>
+          </div>
+        </md-list-item>
+      </md-list>
+    </div>
+  </div>
+  <div layout="column" flex layout-fill style="overflow:scroll;">
+    <md-toolbar md-scroll-shrink>
+      <div class="md-toolbar-tools">Properties</div>
+    </md-toolbar>
+    <div layout="column" flex layout-fill style="overflow:scroll;">
+      <md-list>
+        <md-list-item class="md-2-line" ng-repeat="property in selectedAccount.properties track by property.id" ng-click="selectProperty(property.id)">
+          <div class="md-list-item-text" layout="column">
+            <p>{{property.name}}</p>
+            <p>({{property.id}})</p>
+          </div>
+        </md-list-item>
+      </md-list>
+    </div>
+  </div>
+  <div layout="column" flex layout-fill style="overflow:scroll;">
+    <md-toolbar md-scroll-shrink>
+      <div class="md-toolbar-tools">Views</div>
+    </md-toolbar>
+    <div layout="column" flex layout-fill style="overflow:scroll;">
+      <md-list style="overflow:scroll:">
+        <md-list-item class="md-2-line" ng-repeat="view in selectedProperty.views track by view.id" ng-click="selectView(view.id)">
+          <div class="md-list-item-text" layout="column">
+            <p>{{view.name}}</p>
+            <p>({{view.id}})</p>
+          </div>
+        </md-list-item>
+      </md-list>
+    </div>
+  </div>
+</md-content>
+<md-button flex ng-click="closePanel()" class="md-warn md-raised">Close</md-button>
