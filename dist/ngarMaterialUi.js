@@ -30,14 +30,11 @@ angular.module('angularGapiAnalyticsreportingUI')
 
   .controller('DateSelectorCtrl', ["$scope", "ngarReportService", function($scope, ngarReportService){
 
-    $scope.dateStart = ngarReportService.params.dateStart;
-    $scope.dateEnd = ngarReportService.params.dateEnd;
-
     $scope.$watch('dateStart', function(newDate){
-      ngarReportService.params.dateStart = newDate;
+      ngarReportService.params[0].dateStart = newDate;
     });
     $scope.$watch('dateEnd', function(newDate){
-      ngarReportService.params.dateEnd = newDate;
+      ngarReportService.params[0].dateEnd = newDate;
     });
 
     $scope.openEndDate = function(){
@@ -54,7 +51,8 @@ angular.module('angularGapiAnalyticsreportingUI')
     return {
       restrict: 'E',
       scope: {
-        type:'@'
+        defaultStart:'=',
+        defaultEnd: '='
       },
       controller: 'DateSelectorCtrl',
       template:
@@ -67,7 +65,22 @@ angular.module('angularGapiAnalyticsreportingUI')
          '    <label class="md-subhead">End Date</label>\n' +
          '    <md-datepicker ng-model="dateEnd" md-hide-icons="triangle" md-is-open="endDateIsOpen"  md-open-on-focus ng-required></md-datepicker>\n' +
          '  </div>\n' +
-         '</div>\n'
+         '</div>\n',
+      link: function(scope){
+
+        scope.$watch('defaultStart', function(start){
+          if (start){
+            scope.dateStart = start;
+          }
+        });
+
+        scope.$watch('defaultEnd', function(end){
+          if (end){
+            scope.dateEnd = end;
+          }
+        });
+
+      }
     };
   });
 
@@ -103,7 +116,7 @@ angular.module('angularGapiAnalyticsreportingUI')
       'METRIC': 'metrics',
       'SEGMENT': 'segments'
     };
-    $scope.selectedMeasurements = ngarReportService.params[measurementMap[$scope.type]];
+    $scope.selectedMeasurements = ngarReportService.params[0][measurementMap[$scope.type]];
 
     $scope.selectMeasurement = function(measurement){
       if (measurement){
@@ -134,13 +147,46 @@ angular.module('angularGapiAnalyticsreportingUI')
   }])
 
 
-  .directive('ngarMeasurementSelector', function () {
+  .directive('ngarMeasurementSelector', ["ngarManagementService", "ngarReportService", function (ngarManagementService, ngarReportService) {
     return {
       restrict: 'E',
       scope: {
-        type:'@'
+        type:'@',
+        defaultSelection: '='
       },
       controller: 'MeasurementSelectorCtrl',
+      link: function(scope){
+        var selectedMeasurements;
+        var measurementMap = {
+          'DIMENSION' : 'dimensions',
+          'METRIC': 'metrics',
+          'SEGMENT': 'segments'
+        };
+        scope.$watchCollection('defaultSelection', function(selection){
+          if (selection){
+            if (scope.type === 'DIMENSION' || scope.type === 'METRIC'){
+              selectedMeasurements = selection.map(function(selectionItem){
+                return ngarManagementService.items.metadata.find(function(metadataItem){
+                  return metadataItem.id === selectionItem;
+                });
+              });
+            }
+            if (scope.type === 'SEGMENT'){
+              selectedMeasurements = selection.map(function(selectionItem){
+                return ngarManagementService.items.segments.find(function(segmentItem){
+                  segmentItem.group = segmentItem.type;
+                  segmentItem.uiName = segmentItem.name;
+                  return segmentItem.name === selectionItem;
+                });
+              });
+            }
+            scope.selectedMeasurements = selectedMeasurements.filter(function(selected){
+              return !_.isUndefined(selected);
+            });
+            ngarReportService.params[0][measurementMap[scope.type]]=scope.selectedMeasurements;
+          }
+        });
+      },
       template:
          '<div flex layout-margin>\n' +
          '  <md-autocomplete\n' +
@@ -170,7 +216,8 @@ angular.module('angularGapiAnalyticsreportingUI')
          '    delete-button-label="Remove Measurement"\n' +
          '    delete-hint="Press delete to remove {{type}}"\n' +
          '    readonly="true"\n' +
-         '    md-max-chips="7">\n' +
+         '    md-max-chips="7"\n' +
+         '    ng-class="type">\n' +
          '    <md-chip-template>\n' +
          '      <span>{{$chip.uiName}}</span>\n' +
          '      <md-icon ng-click="removeMeasurement($index)">close</md-icon>\n' +
@@ -179,7 +226,7 @@ angular.module('angularGapiAnalyticsreportingUI')
          '  <!-- <div ng-message="md-max-chips">You reached the maximum amount of chips</div> -->\n' +
          '</div>\n'
     };
-  });
+  }]);
 
 'use strict';
 
@@ -315,13 +362,20 @@ angular.module('angularGapiAnalyticsreportingUI')
     };
   }])
 
-  .directive('ngarViewSelector', ["ngarViewSelectorService", function (ngarViewSelectorService) {
+  .directive('ngarViewSelector', ["ngarViewSelectorService", "ngarReportService", function (ngarViewSelectorService,ngarReportService) {
     return {
       restrict: 'A',
-      scope: {},
+      scope: {
+        defaultView : '='
+      },
       link: function(scope, el){
         el.bind('click', function(){
           ngarViewSelectorService.showSelector();
+        });
+        scope.$watch('defaultView', function(viewId){
+          if (viewId){
+            ngarReportService.updateViewId(viewId);
+          }
         });
       }
     };

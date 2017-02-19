@@ -1,6 +1,6 @@
 {
   "name": "angular-gapi-analyticsreporting-material-ui",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "angular material directives for reporting api",
   "main": ["dist/ngarMaterialUi.js","dist/ngarMaterialUi.css"],
   "keywords": [
@@ -26,7 +26,7 @@
     "lodash": "^4.16.6",
     "moment": "^2.16.0",
     "angular-material": "^1.1.1",
-    "angular-gapi-analyticsreporting": "https://github.com/stephandacosta/bower-angular-gapi-analyticsreporting.git#^0.0.1"
+    "angular-gapi-analyticsreporting": "https://github.com/stephandacosta/bower-angular-gapi-analyticsreporting.git#^0.0.2"
   },
   "devDependencies": {
   },

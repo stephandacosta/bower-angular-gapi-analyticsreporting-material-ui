@@ -132,13 +132,20 @@ angular.module('angularGapiAnalyticsreportingUI')
     };
   })
 
-  .directive('ngarViewSelector', function (ngarViewSelectorService) {
+  .directive('ngarViewSelector', function (ngarViewSelectorService,ngarReportService) {
     return {
       restrict: 'A',
-      scope: {},
+      scope: {
+        defaultView : '='
+      },
       link: function(scope, el){
         el.bind('click', function(){
           ngarViewSelectorService.showSelector();
+        });
+        scope.$watch('defaultView', function(viewId){
+          if (viewId){
+            ngarReportService.updateViewId(viewId);
+          }
         });
       }
     };
